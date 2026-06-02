@@ -1,0 +1,12 @@
+﻿beautifulsoup4
+fastapi
+lxml
+numpy
+openpyxl
+pypdf
+playwright
+requests
+scikit-learn
+uvicorn
+
+

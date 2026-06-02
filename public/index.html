@@ -1,0 +1,209 @@
+﻿<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TARGET2 GPT</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="static/styles.css?v=20260525-auth-token1" />
+  </head>
+  <body>
+    <section id="authGate" class="auth-gate" aria-live="polite">
+      <div class="auth-panel">
+        <div class="brand-lockup auth-brand">
+          <span class="brand-mark">T</span>
+          <div>
+            <strong>TARGET2 GPT</strong>
+            <span>Restricted access</span>
+          </div>
+        </div>
+
+        <div id="authNotice" class="auth-notice">Checking session...</div>
+
+        <form id="loginForm" class="auth-card">
+          <h1>Access</h1>
+          <p>Only approved emails can enter. After approval, use the temporary key and change it before using TARGET2 GPT.</p>
+          <label>
+            Email
+            <input id="loginEmail" type="email" autocomplete="email" required />
+          </label>
+          <label>
+            Temporary key or password
+            <input id="loginPassword" type="password" autocomplete="current-password" required />
+          </label>
+          <button class="send-btn" type="submit">Enter</button>
+        </form>
+
+        <form id="changePasswordForm" class="auth-card hidden">
+          <h1>Change key</h1>
+          <p>This email is approved, but the temporary key must be replaced before access is enabled.</p>
+          <label>
+            Temporary key
+            <input id="currentPassword" type="password" autocomplete="current-password" required />
+          </label>
+          <label>
+            New key
+            <input id="newPassword" type="password" autocomplete="new-password" minlength="10" required />
+          </label>
+          <button class="send-btn" type="submit">Save new key</button>
+        </form>
+
+        <form id="accessRequestForm" class="auth-card secondary">
+          <h2>Request approval</h2>
+          <p>Access is approved manually by Trilemma Consulting.</p>
+          <div class="contact-strip">
+            <span>Approval email</span>
+            <a href="mailto:contact@trilemmaconsulting.com?subject=TARGET2%20GPT%20access%20request">contact@trilemmaconsulting.com</a>
+          </div>
+          <label>
+            Email to approve
+            <input id="requestEmail" type="email" autocomplete="email" required />
+          </label>
+          <label>
+            Name
+            <input id="requestName" type="text" autocomplete="name" />
+          </label>
+          <label>
+            Organization
+            <input id="requestOrg" type="text" autocomplete="organization" />
+          </label>
+          <a class="text-btn email-action" href="mailto:contact@trilemmaconsulting.com?subject=TARGET2%20GPT%20access%20request">Send email request</a>
+          <button id="accessRequestBtn" class="text-btn" type="submit">Register request</button>
+          <p id="accessRequestStatus" class="inline-status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
+    <div class="app hidden" data-sidebar="closed" data-inspector="closed">
+      <aside class="sidebar" aria-label="Conversaciones">
+        <div class="sidebar-head">
+          <div class="brand-lockup">
+            <span class="brand-mark">T</span>
+            <div>
+              <strong>TARGET2 GPT</strong>
+              <span>Corpus local ECB</span>
+            </div>
+          </div>
+          <div class="sidebar-head-actions">
+            <button id="newChatBtn" class="icon-btn primary-action" type="button" title="Nuevo chat" aria-label="Nuevo chat">+</button>
+            <button id="closeSidebarBtn" class="icon-btn sidebar-close" type="button" title="Cerrar historial" aria-label="Cerrar historial">x</button>
+          </div>
+        </div>
+
+        <label class="search-box">
+          <span>Buscar</span>
+          <input id="chatSearch" type="search" placeholder="Conversaciones" autocomplete="off" />
+        </label>
+
+        <nav id="chatList" class="chat-list" aria-label="Historial"></nav>
+
+        <div class="sidebar-foot">
+          <div class="mini-stat">
+            <span>Documentos</span>
+            <strong id="docCount">...</strong>
+          </div>
+          <div class="mini-stat">
+            <span>Chunks</span>
+            <strong id="chunkCount">...</strong>
+          </div>
+          <div class="settings-row">
+            <label>
+              Profundidad
+              <select id="topK">
+                <option value="16">Normal</option>
+                <option value="24" selected>Alta</option>
+                <option value="32">Maxima</option>
+              </select>
+            </label>
+            <button id="exportBtn" class="text-btn" type="button">Exportar</button>
+          </div>
+        </div>
+      </aside>
+
+      <main class="chat-main" aria-label="Chat TARGET2">
+        <header class="chat-topbar">
+          <button id="sidebarBtn" class="icon-btn" type="button" title="Abrir historial" aria-label="Abrir historial" aria-expanded="false">=</button>
+          <div class="title-block">
+            <h1 id="chatTitle">Nuevo chat</h1>
+            <div class="badges">
+              <span id="engineBadge">Codex High</span>
+              <span id="indexBadge">RAG premium</span>
+            </div>
+          </div>
+          <div class="topbar-actions">
+            <label class="model-select">
+              <span>Modelo</span>
+              <select id="modelPreset" aria-label="Modelo de respuesta">
+                <option value="codex_high" selected>Codex High</option>
+                <option value="codex_fast">Codex Fast</option>
+                <option value="local_rag">Solo RAG</option>
+              </select>
+            </label>
+            <button id="clearChatBtn" class="text-btn" type="button">Limpiar</button>
+            <button id="refsBtn" class="text-btn" type="button">Fuentes</button>
+            <button id="logoutBtn" class="text-btn" type="button">Salir</button>
+          </div>
+        </header>
+
+        <section id="messages" class="messages" aria-live="polite"></section>
+        <button id="jumpBottomBtn" class="jump-bottom hidden" type="button" aria-label="Bajar al final">v</button>
+
+        <section class="quick-prompts" id="quickPrompts" aria-label="Preguntas rapidas">
+          <button type="button" data-prompt="Que es CLM y como encaja con RTGS en T2?">CLM/RTGS</button>
+          <button type="button" data-prompt="Diferencia entre una MCA y una RTGS DCA">MCA/DCA</button>
+          <button type="button" data-prompt="Como funciona la conectividad ESMIG en TARGET Services?">ESMIG</button>
+          <button type="button" data-prompt="Que CRs afectan a R2026.NOV?">CRs R2026.NOV</button>
+        </section>
+
+        <form id="askForm" class="composer" aria-label="Enviar pregunta">
+          <div class="composer-tools">
+            <div class="mode-switch" role="tablist" aria-label="Modo">
+              <button class="mode active" type="button" data-mode="answer">Respuesta</button>
+              <button class="mode" type="button" data-mode="context">Contexto</button>
+            </div>
+            <label class="model-select model-select-mobile">
+              <span>Modelo</span>
+              <select id="modelPresetMobile" aria-label="Modelo de respuesta movil">
+                <option value="codex_high" selected>Codex High</option>
+                <option value="codex_fast">Codex Fast</option>
+                <option value="local_rag">Solo RAG</option>
+              </select>
+            </label>
+          </div>
+          <div class="input-wrap">
+            <textarea
+              id="question"
+              rows="1"
+              placeholder="Pregunta sobre T2, CLM, RTGS, MCA, DCA, CRDM, BDM, UDFS, UHB, CRs, ESMIG..."
+            ></textarea>
+            <div class="composer-actions">
+              <button id="stopBtn" class="text-btn hidden" type="button">Parar</button>
+              <button id="askBtn" class="send-btn" type="submit">Enviar</button>
+            </div>
+          </div>
+        </form>
+      </main>
+
+      <aside class="inspector" aria-label="Fuentes y referencias">
+        <div class="inspector-head">
+          <div>
+            <h2>Fuentes</h2>
+            <span id="refsSummary">Sin referencias</span>
+          </div>
+          <button id="closeRefsBtn" class="icon-btn" type="button" title="Cerrar fuentes" aria-label="Cerrar fuentes">x</button>
+        </div>
+        <div id="refs" class="refs-list"></div>
+      </aside>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script>
+      window.target2_API_BASE = window.location.hostname === "www.trilemmaconsulting.com"
+        ? "https://target2-api.ethcuela.es"
+        : "";
+    </script>
+    <script src="static/app.js?v=20260525-auth-token1"></script>
+  </body>
+</html>
+
+
